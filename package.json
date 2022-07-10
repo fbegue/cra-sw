@@ -1,6 +1,6 @@
 {
   "name": "cra-sw",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "private": true,
   "dependencies": {
     "react": "17.0.1",
