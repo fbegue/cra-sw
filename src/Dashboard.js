@@ -1,30 +1,7 @@
-import React, {useState} from 'react';
+import React, {useState,useEffect} from 'react';
 
 
 function Main(props) {
-	//note: 405
-	//const params = JSON.parse(localStorage.getItem('params'));
-	// const get = () =>{
-	// 	let uri = "https://api.spotify.com/v1/me/player/currently-playing"
-	// 	let options = {
-	// 		method: "POST",
-	// 		uri:uri,
-	// 		headers: {
-	// 			'User-Agent': 'Request-Promise',
-	// 			"Authorization":'Bearer ' + params.access_token
-	// 		},
-	// 		json: true
-	// 	};
-	// 	console.log({options});
-	// 	fetch(uri,options)
-	// 		.then(r =>{
-	// 			console.log(r);
-	//
-	// 		},e =>{
-	// 			console.log(e);
-	//
-	// 		})
-	// }
 
 	let api_address = null;
 	if(window.location.host === "soundfound.io" ){
@@ -34,30 +11,23 @@ function Main(props) {
 	}else{
 		api_address = "http://localhost:8888"
 	}
-	function randomNotification(rec) {
-		// const randomItem = Math.floor(Math.random() * games.length);
-		// const notifTitle = games[randomItem].name;
-		// const notifBody = `Created by ${games[randomItem].author}.`;
-		// const notifImg = `data/img/${games[randomItem].slug}.jpg`;
-		// const options = {
-		//   body: notifBody,
-		//   icon: notifImg,
-		// };
-		new Notification("getPlaying", {body:JSON.stringify(rec)});
-		new Notification("testtitle", {body:"testbody"});
+	// function randomNotification(rec) {
+	// 	new Notification("getPlaying", {body:JSON.stringify(rec)});
+	// }
 
-		//setTimeout(randomNotification, 30000);
-	}
-
-	const ask = (rec) =>{
+	const ask = () =>{
 		Notification.requestPermission().then((result) => {
 			if (result === 'granted') {
-				randomNotification(rec);
+				setAccess(result)
+				new Notification("access", {body:result});
 			}
 		});
 	}
+
 	const [playing, setPlaying] = useState(null);
-	var get =  function(code){
+	const [access, setAccess] = useState(false);
+
+	var get =  function(){
 		return new Promise(function(done, fail) {
 			// console.log("code for accessToken fetch",code);
 			fetch(api_address + '/getPlaying', {
@@ -66,32 +36,49 @@ function Main(props) {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({code:code})
+				// body: JSON.stringify({code:code})
 			})
 				.then(res => res.json())
 				.then(function(res){
 					console.log("getPlaying response: ",res);
-					setPlaying(res.item)
-					new Notification("testtitle", {body:"testbody"});
-				    var rec = 	{artist: playing.artists[0].name,track: playing.name}
-				    ask(rec)
-					// new Notification("getPlaying", {body:JSON.stringify(rec)});
-					// new Notification("getPlayingraw", {body:rec});
-					done(res)
-				})
+				    var rec = 	{id:res.item.id,artist: res.item.artists[0].name,track: res.item.name}
+					setPlaying(rec)
+					done(rec)
+				},e =>{fail(e)})
 
 		})
 	}
 
+	var prevId = null;
+	useEffect(() => {
+		setInterval(function(){
+			get()
+				.then(_rec =>{
+					if(prevId === null){prevId = _rec.id}
+					if(prevId !== _rec.id){
+						prevId = _rec.id
+						console.log("Notification",_rec);
+						new Notification("getPlaying", {body:_rec});
+					}else{
+						console.log("no change",_rec);
+					}
+				},e =>{
+					console.error("useEffect > get | error",e);
+				})
+		}, 5000);
+	},[]);
+
+
 	return(<div>
 		logged in
 		{/*{JSON.stringify(params)}*/}
-		<button onClick={() =>{get()}}>get</button>
-		getPlaying
+		<button onClick={() =>{ask()}}>ask </button> {access ? 'true':'false'}
+		{/*<button onClick={() =>{get()}}>getPlaying</button>*/}
 		{playing &&
 		<div>
-			<div>artist: {playing.artists[0].name}</div>
-			<div> track: {playing.name}</div>
+			<div> artist: {playing.artist}</div>
+			<div> track: {playing.track}</div>
+			<div> id: {playing.id}</div>
 		</div>
 		}
 	</div>)
