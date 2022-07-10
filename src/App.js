@@ -35,10 +35,11 @@ function App() {
   //var redirect_address = "http://localhost:3000";
   //var redirect_address = 'https://soundfound.io'
   var redirect_address = "https://sweet-trifle-5834dc.netlify.app"
+  console.log(" redirect_address",redirect_address)
   const t = window.location.toString();
   if( t.includes('3000')){
     //api_address = "http://localhost:8888"
-    console.log("changed redirect_address",window.location.toString())
+    console.log("changed redirect_address from location",window.location.toString())
 
     redirect_address = "http://localhost:3000"
   }
