@@ -41,7 +41,8 @@ function Main(props) {
 				.then(res => res.json())
 				.then(function(res){
 					console.log("getPlaying response: ",res);
-				    var rec = 	{id:res.item.id,artist: res.item.artists[0].name,track: res.item.name}
+				    var rec = 	{id:res.track.item.id,artist: res.track.item.artists[0].name,
+						track: res.track.item.name,genres:res.artist.genres}
 					setPlaying(rec)
 					done(rec)
 				},e =>{fail(e)})
@@ -49,16 +50,21 @@ function Main(props) {
 		})
 	}
 
-	var prevId = null;
+	//const [prevId, set] = useState(false);
+	var prevId= false;
+	var set = (v) =>{prevId = v;}
 	useEffect(() => {
 		setInterval(function(){
 			get()
 				.then(_rec =>{
-					if(prevId === null){prevId = _rec.id}
+					if(prevId === false){set(_rec.id)}
+					console.log("prevId |" + prevId +" |rec| " + _rec.id);
 					if(prevId !== _rec.id){
-						prevId = _rec.id
-						console.log("Notification",_rec);
-						new Notification("getPlaying", {body:_rec});
+						set(_rec.id)
+						console.log("Notification",_rec.genres.toString());
+						// new Notification("getPlaying", {body:JSON.stringify(_rec)});
+						//todo:fix ternary
+						new Notification(_rec.artist, {body:_rec.genres.toString() !== "" ? _rec.genres.toString(): "no genres"});
 					}else{
 						console.log("no change",_rec);
 					}
@@ -79,6 +85,13 @@ function Main(props) {
 			<div> artist: {playing.artist}</div>
 			<div> track: {playing.track}</div>
 			<div> id: {playing.id}</div>
+			<ul>
+				{playing.genres.map((genre) =>
+					<li key={genre}>
+						{JSON.stringify(genre)}
+					</li>
+				)}
+			</ul>
 		</div>
 		}
 	</div>)
