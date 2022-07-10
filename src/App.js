@@ -79,6 +79,13 @@ function App() {
       </header>
       <BrowserRouter>
         <div className="main">
+          {/*  <Route path="/redirect">
+              <RedirectPage/>
+            </Route>
+            <Route path="/dashboard">
+              <Dashboard/>
+            </Route>
+            */}
           <Switch>
             {/*<Route path="/" component={Home} exact={true} />*/}
             <Route path="/redirect" component={RedirectPage} />
