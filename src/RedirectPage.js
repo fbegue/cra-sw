@@ -1,6 +1,6 @@
 import React from 'react';
-import api from '../../api/api'
-import { GLOBAL_UI_VAR } from '../../storage/withApolloProvider';
+// import api from '../../api/api'
+// import { GLOBAL_UI_VAR } from '../../storage/withApolloProvider';
 //source:
 //https://dev.to/myogeshchavan97/how-to-create-a-spotify-music-search-app-in-react-328m
 //repo:
@@ -32,6 +32,13 @@ export const getParamValues = (url) => {
 // 	}
 // };
 
+let api_address = null;
+if(window.location.host === "soundfound.io" ){
+	api_address = "https://api.soundfound.io"
+}else{
+	api_address = "http://localhost:8888"
+}
+
 export default class RedirectPage extends React.Component {
 	componentDidMount() {
 		const { setExpiryTime, history, location } = this.props;
@@ -45,8 +52,27 @@ export default class RedirectPage extends React.Component {
 			// }
 
 			//console.log("$code",params.code);
+			var getAuth =  function(code){
+				return new Promise(function(done, fail) {
+					// console.log("code for accessToken fetch",code);
+					fetch(api_address + '/getAuth', {
+						method: 'POST', // *GET, POST, PUT, DELETE, etc.
+						mode: 'cors', // no-cors, *cors, same-origin
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({code:code})
+					})
+						.then(res => res.json())
+						.then(function(res){
+							console.log("login response: ",res);
+							done(res)
+						})
 
-			api.getAuth(params.code)
+				})
+			}
+
+			getAuth(params.code)
 				.then(r =>{
 					console.log("getAuth:",r);
 					//testing: just going to double-dose this stuff
@@ -57,8 +83,8 @@ export default class RedirectPage extends React.Component {
 
 					//todo: state set here causes APP rerender
 					//but I need to be evaluating the new expiryTime anyways right?
+					//GLOBAL_UI_VAR({access_token:r.access_token,refresh_token:r.refresh_token,user:r.user,expiryTime:expiryTime.toISOString()})
 
-					GLOBAL_UI_VAR({access_token:r.access_token,refresh_token:r.refresh_token,user:r.user,expiryTime:expiryTime.toISOString()})
 					console.log("getAuth finished. redirecting...");
 					history.push('/dashboard');
 				},e =>{console.error(e)})
