@@ -32,8 +32,15 @@ function App() {
   var REACT_APP_CLIENT_ID="0e7ef13646c9410293a0119e652b35f7"
   var REACT_APP_AUTHORIZE_URL= "https://accounts.spotify.com/authorize"
 
-  var redirect_address = "http://localhost:3000";
+  //var redirect_address = "http://localhost:3000";
   //var redirect_address = 'https://soundfound.io'
+  var redirect_address = "https://sweet-trifle-5834dc.netlify.app"
+  const t = window.location.toString();
+  if( t.includes('3000')){
+    //api_address = "http://localhost:8888"
+    redirect_address = "http://localhost:3000"
+  }
+  
   var REACT_APP_REDIRECT_URL= redirect_address +"/redirect"
   //var REACT_APP_REDIRECT_URL= "https://master.d267e964bph18g.amplifyapp.com/redirect"
 
