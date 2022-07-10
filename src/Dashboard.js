@@ -34,6 +34,28 @@ function Main(props) {
 	}else{
 		api_address = "http://localhost:8888"
 	}
+	function randomNotification(rec) {
+		// const randomItem = Math.floor(Math.random() * games.length);
+		// const notifTitle = games[randomItem].name;
+		// const notifBody = `Created by ${games[randomItem].author}.`;
+		// const notifImg = `data/img/${games[randomItem].slug}.jpg`;
+		// const options = {
+		//   body: notifBody,
+		//   icon: notifImg,
+		// };
+		new Notification("getPlaying", {body:JSON.stringify(rec)});
+		new Notification("testtitle", {body:"testbody"});
+
+		//setTimeout(randomNotification, 30000);
+	}
+
+	const ask = (rec) =>{
+		Notification.requestPermission().then((result) => {
+			if (result === 'granted') {
+				randomNotification(rec);
+			}
+		});
+	}
 	const [playing, setPlaying] = useState(null);
 	var get =  function(code){
 		return new Promise(function(done, fail) {
@@ -50,9 +72,11 @@ function Main(props) {
 				.then(function(res){
 					console.log("getPlaying response: ",res);
 					setPlaying(res.item)
+					new Notification("testtitle", {body:"testbody"});
 				    var rec = 	{artist: playing.artists[0].name,track: playing.name}
-					new Notification("getPlaying", {body:JSON.stringify(rec)});
-					new Notification("getPlayingraw", {body:rec});
+				    ask(rec)
+					// new Notification("getPlaying", {body:JSON.stringify(rec)});
+					// new Notification("getPlayingraw", {body:rec});
 					done(res)
 				})
 
