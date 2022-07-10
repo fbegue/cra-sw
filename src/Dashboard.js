@@ -29,6 +29,8 @@ function Main(props) {
 	let api_address = null;
 	if(window.location.host === "soundfound.io" ){
 		api_address = "https://api.soundfound.io"
+	}else if(window.location.host === "sweet-trifle-5834dc.netlify.app" ){
+		api_address = "https://api.soundfound.io"
 	}else{
 		api_address = "http://localhost:8888"
 	}

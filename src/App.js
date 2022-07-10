@@ -38,9 +38,11 @@ function App() {
   const t = window.location.toString();
   if( t.includes('3000')){
     //api_address = "http://localhost:8888"
+    console.log("changed redirect_address",window.location.toString())
+
     redirect_address = "http://localhost:3000"
   }
-  
+
   var REACT_APP_REDIRECT_URL= redirect_address +"/redirect"
   //var REACT_APP_REDIRECT_URL= "https://master.d267e964bph18g.amplifyapp.com/redirect"
 
